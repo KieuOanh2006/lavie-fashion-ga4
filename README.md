@@ -12,7 +12,7 @@ Website bán hàng thời trang nữ dạng tĩnh, xây bằng HTML, CSS và Jav
 - Phí giao hàng giả lập 25.000₫; miễn phí cho đơn từ 699.000₫.
 - Form checkout có kiểm tra thông tin, lựa chọn phương thức thanh toán demo và trang xác nhận đơn demo.
 - Ghi nhận đơn demo trên thiết bị hiện tại, không lưu thông tin cá nhân nhập trong form.
-- Tích hợp Google Analytics 4 qua Google tag (gtag.js), có thể kiểm tra event trong Console khi chưa cấu hình Measurement ID.
+- Tích hợp Google Tag Manager để quản lý thẻ GA4; website đẩy sự kiện thương mại điện tử vào dataLayer.
 
 ## Chạy trên máy bằng VS Code
 
@@ -23,20 +23,17 @@ Website bán hàng thời trang nữ dạng tĩnh, xây bằng HTML, CSS và Jav
    - Nếu chưa muốn cài extension, nhấp đúp vào `index.html` trong File Explorer để mở bằng trình duyệt. Hầu hết tính năng demo vẫn chạy; Live Server được khuyến nghị để có môi trường ổn định hơn.
 4. Thử tìm sản phẩm, mở chi tiết, chọn size/màu, thêm vào giỏ, áp dụng mã `LAVIE10`, rồi điền form checkout. Không có giao dịch hoặc đơn hàng thật.
 
-## Kết nối GA4
+## Kết nối GA4 qua Google Tag Manager
 
-1. Mở [Google Analytics](https://analytics.google.com/) và tạo một GA4 Property cho đồ án.
-2. Vào **Admin → Data streams → Web**, tạo Web data stream và copy **Measurement ID** có dạng `G-XXXXXXXXXX`.
-3. Trong VS Code, mở `config.js`.
-4. Thay dòng `GA_MEASUREMENT_ID: ""` bằng Measurement ID của nhóm, ví dụ:
+1. Tạo hoặc chọn một GA4 Property, sau đó tạo Web data stream cho website.
+2. Trong Google Tag Manager, tạo Google tag với Measurement ID của Web data stream và kích hoạt trên mọi trang.
+3. Cài container GTM vào index.html: đoạn script nằm trong head và đoạn noscript nằm ngay sau body.
+4. Tạo các GA4 Event tag trong GTM cho những sự kiện được đẩy vào dataLayer; dùng Custom Event trigger có tên trùng với tên sự kiện.
+5. Dùng Preview/Tag Assistant để kiểm tra, sau đó xuất bản container. Đối chiếu sự kiện trong GA4 DebugView.
 
-   ```js
-   window.LAVIE_CONFIG = {
-     GA_MEASUREMENT_ID: "G-ABC123XYZ",
-   };
-   ```
+Website mẫu đã cài container GTM-5M5HVX2L. Giữ GA_MEASUREMENT_ID trong config.js để trống khi dùng GTM; nếu điền Measurement ID, app.js sẽ nạp gtag.js trực tiếp và có thể tạo phương thức đo lường thứ hai.
 
-5. Lưu file, tải lại website và mở GA4 **Reports → Realtime**. Tương tác trên website rồi kiểm tra dữ liệu. Có thể dùng Google Tag Assistant để xác minh thẻ. Dữ liệu có thể không hiện tức thì trong báo cáo thông thường.
+Các đơn hàng trên website chỉ là dữ liệu demo; không có giao dịch hoặc thanh toán thật.
 
 ### Event GA4 được gọi trong bản demo
 

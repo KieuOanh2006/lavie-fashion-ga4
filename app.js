@@ -22,7 +22,7 @@
     window.gtag('config', GA_MEASUREMENT_ID, { send_page_view: true });
     console.info(`[LAVIE GA4] Đã cấu hình Measurement ID: ${GA_MEASUREMENT_ID}`);
   } else {
-    console.info('[LAVIE GA4] Chưa có Measurement ID hợp lệ. Các event demo sẽ xuất hiện trong Console; chỉnh config.js để gửi dữ liệu vào GA4.');
+    console.info('[LAVIE GA4] Measurement ID trực tiếp chưa được cấu hình. Event demo được đẩy vào dataLayer; dùng Google Tag Manager để gửi event đến GA4.');
   }
 
   const products = [

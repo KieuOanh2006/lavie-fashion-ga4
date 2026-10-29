@@ -1,7 +1,7 @@
 /* CẤU HÌNH WEBSITE LAVIE FASHION
-   Dán Measurement ID GA4 của nhóm vào giữa hai dấu nháy.
-   Ví dụ: GA_MEASUREMENT_ID: "G-ABC123XYZ"
-   Để trống nếu chưa tạo GA4; website vẫn chạy và in event demo ra Console.
+   Mã website được cấu hình để gửi dữ liệu qua Google Tag Manager.
+   Giữ GA_MEASUREMENT_ID trống để tránh nạp gtag.js trực tiếp ngoài GTM.
+   Các sự kiện thương mại điện tử được đẩy vào dataLayer từ app.js.
 */
 window.LAVIE_CONFIG = {
   GA_MEASUREMENT_ID: "",
