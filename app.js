@@ -85,12 +85,31 @@
   function shippingCost() { return cartSubtotal() <= 0 || cartSubtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE; }
   function discountAmount() { return appliedCoupon === COUPON_CODE ? Math.round(cartSubtotal() * 0.1) : 0; }
   function cartTotal() { return Math.max(0, cartSubtotal() - discountAmount()) + shippingCost(); }
+  const ecommerceEvents = new Set([
+    'view_item_list',
+    'select_item',
+    'view_item',
+    'view_cart',
+    'add_to_cart',
+    'remove_from_cart',
+    'begin_checkout',
+    'add_shipping_info',
+    'add_payment_info',
+    'purchase'
+  ]);
+
   function trackEvent(name, params = {}) {
     const eventParams = { ...params };
     if (!validMeasurementId) {
-      const diagnostic = { event: name, ...eventParams };
-      window.dataLayer.push(diagnostic);
-      console.info(`[LAVIE GA4 DEMO] ${name}`, diagnostic);
+      if (ecommerceEvents.has(name)) {
+        // Clear ecommerce values from the preceding hit before sending this event.
+        window.dataLayer.push({ ecommerce: null });
+        window.dataLayer.push({ event: name, ecommerce: eventParams });
+      } else {
+        const diagnostic = { event: name, ...eventParams };
+        window.dataLayer.push(diagnostic);
+        console.info(`[LAVIE GA4 DEMO] ${name}`, diagnostic);
+      }
       return;
     }
     window.gtag('event', name, eventParams);
