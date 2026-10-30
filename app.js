@@ -99,17 +99,30 @@
   ]);
 
   function trackEvent(name, params = {}) {
-    const eventParams = { ...params };
-    if (!validMeasurementId) {
-      if (ecommerceEvents.has(name)) {
-        // Clear ecommerce values from the preceding hit before sending this event.
-        window.dataLayer.push({ ecommerce: null });
-        window.dataLayer.push({ event: name, ecommerce: eventParams });
-      } else {
-        const diagnostic = { event: name, ...eventParams };
-        window.dataLayer.push(diagnostic);
-        console.info(`[LAVIE GA4 DEMO] ${name}`, diagnostic);
+    const removeUndefined = (value) => {
+      if (Array.isArray(value)) return value.map(removeUndefined);
+      if (value && typeof value === 'object') {
+        return Object.fromEntries(
+          Object.entries(value)
+            .filter(([, nestedValue]) => nestedValue !== undefined)
+            .map(([key, nestedValue]) => [key, removeUndefined(nestedValue)])
+        );
       }
+      return value;
+    };
+    const eventParams = removeUndefined(params);
+
+    if (ecommerceEvents.has(name)) {
+      // GTM ecommerce tags read the payload from the data layer's ecommerce object.
+      window.dataLayer.push({ ecommerce: null });
+      window.dataLayer.push({ event: name, ecommerce: eventParams });
+      return;
+    }
+
+    if (!validMeasurementId) {
+      const diagnostic = { event: name, ...eventParams };
+      window.dataLayer.push(diagnostic);
+      console.info(`[LAVIE GA4 DEMO] ${name}`, diagnostic);
       return;
     }
     window.gtag('event', name, eventParams);
