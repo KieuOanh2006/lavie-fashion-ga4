@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">LAVIE FASHION</title>
+  <desc id="desc">Ảnh sản phẩm đang được cập nhật</desc>
+  <rect width="800" height="1000" fill="#eee9df"/>
+  <rect x="160" y="255" width="480" height="390" rx="24" fill="none" stroke="#b4b5a4" stroke-width="3"/>
+  <circle cx="310" cy="365" r="40" fill="#b4b5a4"/>
+  <path d="m190 605 140-150 100 100 90-110 90 160" fill="none" stroke="#b4b5a4" stroke-width="8" stroke-linejoin="round"/>
+  <text x="400" y="730" text-anchor="middle" fill="#535b49" font-family="Georgia,serif" font-size="30" letter-spacing="5">LAVIE FASHION</text>
+  <text x="400" y="785" text-anchor="middle" fill="#73776a" font-family="Arial,sans-serif" font-size="22">Ảnh sản phẩm đang cập nhật</text>
+</svg>

@@ -5,7 +5,7 @@
   'use strict';
 
   const GA_MEASUREMENT_ID = String(window.LAVIE_CONFIG?.GA_MEASUREMENT_ID || '').trim();
-  const STORAGE = { cart: 'lavie_cart_v1', wishlist: 'lavie_wishlist_v1', orders: 'lavie_demo_orders_v1' };
+  const STORAGE = { cart: 'lavie_cart_v1', wishlist: 'lavie_wishlist_v1', orders: 'lavie_demo_orders_v1', coupon: 'lavie_coupon_v1' };
   const FREE_SHIPPING_THRESHOLD = 699000;
   const SHIPPING_FEE = 25000;
   const COUPON_CODE = 'LAVIE10';
@@ -26,14 +26,14 @@
   }
 
   const products = [
-    { id: 'LV001', name: 'Đầm midi linen An Nhiên', category: 'dress', categoryLabel: 'VÁY & ĐẦM', price: 489000, oldPrice: 589000, badge: 'BEST SELLER', description: 'Phom midi nhẹ nhàng, chất vải linen pha thoáng mát và hàng nút tinh tế. Dễ mặc đi làm, đi cà phê hay một buổi hẹn cuối tuần.', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=85', imageAlt: 'Đầm nữ phong cách thanh lịch', colors: [{ name: 'Đỏ đất', hex: '#ad6c55' }, { name: 'Kem sữa', hex: '#e7ddca' }, { name: 'Đen', hex: '#292b27' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.9' },
-    { id: 'LV002', name: 'Áo sơ mi Mây Trắng', category: 'top', categoryLabel: 'ÁO', price: 329000, oldPrice: null, badge: 'MỚI VỀ', description: 'Áo sơ mi phom relaxed với đường may gọn gàng, dễ phối cùng quần suông hoặc chân váy. Một món cơ bản để mặc quanh năm.', image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?auto=format&fit=crop&w=900&q=85', imageAlt: 'Áo sơ mi nữ màu sáng', colors: [{ name: 'Trắng', hex: '#f1eee5' }, { name: 'Xanh nhạt', hex: '#b6c9c7' }, { name: 'Be', hex: '#cbbba4' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.8' },
-    { id: 'LV003', name: 'Quần suông Thanh Lịch', category: 'bottom', categoryLabel: 'QUẦN & CHÂN VÁY', price: 419000, oldPrice: null, badge: '', description: 'Cạp cao vừa vặn, ống suông tạo cảm giác cân đối và thoải mái khi di chuyển. Phối cùng áo thun hoặc sơ mi đều hợp.', image: 'https://images.unsplash.com/photo-1506629905607-d9a0d9e0e6b4?auto=format&fit=crop&w=900&q=85', imageAlt: 'Quần nữ phom suông', colors: [{ name: 'Nâu cacao', hex: '#7d604b' }, { name: 'Đen', hex: '#272a26' }, { name: 'Kem', hex: '#e5decd' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.9' },
-    { id: 'LV004', name: 'Áo thun basic Nắng', category: 'top', categoryLabel: 'ÁO', price: 189000, oldPrice: null, badge: 'DỄ PHỐI', description: 'Áo thun cotton mềm, bề mặt mịn, phom suông vừa phải. Mặc riêng thật thoải mái hoặc làm lớp nền cho nhiều kiểu phối đồ.', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85', imageAlt: 'Áo thun cotton màu trắng', colors: [{ name: 'Trắng', hex: '#f1eee7' }, { name: 'Xanh sage', hex: '#aebca7' }, { name: 'Đen', hex: '#282a26' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.8' },
-    { id: 'LV005', name: 'Chân váy chữ A Hạ', category: 'bottom', categoryLabel: 'QUẦN & CHÂN VÁY', price: 349000, oldPrice: 399000, badge: '−13%', description: 'Chân váy chữ A có độ xòe vừa đủ, tôn dáng mà vẫn dễ vận động. Phù hợp với áo thun, sơ mi và cardigan.', image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=900&q=85', imageAlt: 'Chân váy nữ phong cách tối giản', colors: [{ name: 'Đen', hex: '#282a26' }, { name: 'Nâu nhạt', hex: '#b69b7e' }, { name: 'Kem', hex: '#e9dfcc' }], sizes: ['S', 'M', 'L'], rating: '4.7' },
-    { id: 'LV006', name: 'Blazer tối giản Lụa', category: 'top', categoryLabel: 'ÁO KHOÁC', price: 699000, oldPrice: null, badge: 'SIGNATURE', description: 'Blazer có cấu trúc mềm và vai áo tinh gọn, tạo vẻ chỉn chu mà không cứng nhắc. Lý tưởng cho ngày làm việc hoặc những dịp cần thêm điểm nhấn.', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=900&q=85', imageAlt: 'Áo khoác blazer thời trang', colors: [{ name: 'Nâu', hex: '#95775d' }, { name: 'Đen', hex: '#292b27' }, { name: 'Be sáng', hex: '#ded0bb' }], sizes: ['S', 'M', 'L', 'XL'], rating: '5.0' },
-    { id: 'LV007', name: 'Cardigan Thu Dịu', category: 'top', categoryLabel: 'ÁO KHOÁC', price: 379000, oldPrice: null, badge: '', description: 'Cardigan dệt kim mềm mại để khoác nhẹ khi trời se lạnh hoặc ngồi phòng máy lạnh. Dáng gọn, màu dịu, dễ đi cùng đồ cơ bản.', image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=900&q=85', imageAlt: 'Áo dệt kim thời trang nữ', colors: [{ name: 'Hồng phấn', hex: '#d8b2ae' }, { name: 'Xanh sage', hex: '#aebba6' }, { name: 'Kem', hex: '#e6ddcc' }], sizes: ['S', 'M', 'L'], rating: '4.8' },
-    { id: 'LV008', name: 'Túi đeo vai Lumi', category: 'accessory', categoryLabel: 'PHỤ KIỆN', price: 459000, oldPrice: null, badge: 'VỪA VỀ', description: 'Túi đeo vai nhỏ gọn với phom cong mềm, đủ chỗ cho những món đồ thiết yếu mỗi ngày. Điểm nhấn tinh giản cho bộ trang phục.', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=85', imageAlt: 'Túi đeo vai nữ màu trung tính', colors: [{ name: 'Nâu caramel', hex: '#a36b47' }, { name: 'Đen', hex: '#292b27' }, { name: 'Kem', hex: '#e5d8c2' }], sizes: ['FREESIZE'], rating: '4.9' },
+    { id: 'LV001', name: 'Đầm midi linen An Nhiên', category: 'dress', categoryLabel: 'VÁY & ĐẦM', price: 489000, oldPrice: 589000, badge: 'BEST SELLER', description: 'Phom midi nhẹ nhàng, chất vải linen pha thoáng mát và hàng nút tinh tế. Dễ mặc đi làm, đi cà phê hay một buổi hẹn cuối tuần.', image: 'assets/images/lv001.jpg', imageAlt: 'Đầm nữ phong cách thanh lịch', colors: [{ name: 'Đỏ đất', hex: '#ad6c55' }, { name: 'Kem sữa', hex: '#e7ddca' }, { name: 'Đen', hex: '#292b27' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.9' },
+    { id: 'LV002', name: 'Áo sơ mi Mây Trắng', category: 'top', categoryLabel: 'ÁO', price: 329000, oldPrice: null, badge: 'MỚI VỀ', description: 'Áo sơ mi phom relaxed với đường may gọn gàng, dễ phối cùng quần suông hoặc chân váy. Một món cơ bản để mặc quanh năm.', image: 'assets/images/lv002.jpg', imageAlt: 'Áo sơ mi nữ màu sáng', colors: [{ name: 'Trắng', hex: '#f1eee5' }, { name: 'Xanh nhạt', hex: '#b6c9c7' }, { name: 'Be', hex: '#cbbba4' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.8' },
+    { id: 'LV003', name: 'Quần suông Thanh Lịch', category: 'bottom', categoryLabel: 'QUẦN & CHÂN VÁY', price: 419000, oldPrice: null, badge: '', description: 'Cạp cao vừa vặn, ống suông tạo cảm giác cân đối và thoải mái khi di chuyển. Phối cùng áo thun hoặc sơ mi đều hợp.', image: 'assets/images/lv003.jpg', imageAlt: 'Quần nữ phom suông', colors: [{ name: 'Nâu cacao', hex: '#7d604b' }, { name: 'Đen', hex: '#272a26' }, { name: 'Kem', hex: '#e5decd' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.9' },
+    { id: 'LV004', name: 'Áo thun basic Nắng', category: 'top', categoryLabel: 'ÁO', price: 189000, oldPrice: null, badge: 'DỄ PHỐI', description: 'Áo thun cotton mềm, bề mặt mịn, phom suông vừa phải. Mặc riêng thật thoải mái hoặc làm lớp nền cho nhiều kiểu phối đồ.', image: 'assets/images/lv004.jpg', imageAlt: 'Áo thun cotton màu trắng', colors: [{ name: 'Trắng', hex: '#f1eee7' }, { name: 'Xanh sage', hex: '#aebca7' }, { name: 'Đen', hex: '#282a26' }], sizes: ['S', 'M', 'L', 'XL'], rating: '4.8' },
+    { id: 'LV005', name: 'Chân váy chữ A Hạ', category: 'bottom', categoryLabel: 'QUẦN & CHÂN VÁY', price: 349000, oldPrice: 399000, badge: '−13%', description: 'Chân váy chữ A có độ xòe vừa đủ, tôn dáng mà vẫn dễ vận động. Phù hợp với áo thun, sơ mi và cardigan.', image: 'assets/images/lv005.jpg', imageAlt: 'Chân váy nữ phong cách tối giản', colors: [{ name: 'Đen', hex: '#282a26' }, { name: 'Nâu nhạt', hex: '#b69b7e' }, { name: 'Kem', hex: '#e9dfcc' }], sizes: ['S', 'M', 'L'], rating: '4.7' },
+    { id: 'LV006', name: 'Blazer tối giản Lụa', category: 'top', categoryLabel: 'ÁO KHOÁC', price: 699000, oldPrice: null, badge: 'SIGNATURE', description: 'Blazer có cấu trúc mềm và vai áo tinh gọn, tạo vẻ chỉn chu mà không cứng nhắc. Lý tưởng cho ngày làm việc hoặc những dịp cần thêm điểm nhấn.', image: 'assets/images/lv006.jpg', imageAlt: 'Áo khoác blazer thời trang', colors: [{ name: 'Nâu', hex: '#95775d' }, { name: 'Đen', hex: '#292b27' }, { name: 'Be sáng', hex: '#ded0bb' }], sizes: ['S', 'M', 'L', 'XL'], rating: '5.0' },
+    { id: 'LV007', name: 'Cardigan Thu Dịu', category: 'top', categoryLabel: 'ÁO KHOÁC', price: 379000, oldPrice: null, badge: '', description: 'Cardigan dệt kim mềm mại để khoác nhẹ khi trời se lạnh hoặc ngồi phòng máy lạnh. Dáng gọn, màu dịu, dễ đi cùng đồ cơ bản.', image: 'assets/images/lv007.jpg', imageAlt: 'Áo dệt kim thời trang nữ', colors: [{ name: 'Hồng phấn', hex: '#d8b2ae' }, { name: 'Xanh sage', hex: '#aebba6' }, { name: 'Kem', hex: '#e6ddcc' }], sizes: ['S', 'M', 'L'], rating: '4.8' },
+    { id: 'LV008', name: 'Túi đeo vai Lumi', category: 'accessory', categoryLabel: 'PHỤ KIỆN', price: 459000, oldPrice: null, badge: 'VỪA VỀ', description: 'Túi đeo vai nhỏ gọn với phom cong mềm, đủ chỗ cho những món đồ thiết yếu mỗi ngày. Điểm nhấn tinh giản cho bộ trang phục.', image: 'assets/images/lv008.jpg', imageAlt: 'Túi đeo vai nữ màu đỏ', colors: [{ name: 'Nâu caramel', hex: '#a36b47' }, { name: 'Đen', hex: '#292b27' }, { name: 'Kem', hex: '#e5d8c2' }], sizes: ['FREESIZE'], rating: '4.9' },
   ];
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -60,6 +60,7 @@
   let selectedQty = 1;
   let appliedCoupon = '';
   let currentModal = null;
+  let infoReturnContext = null;
   let lastOrder = null;
   let hasSentInitialListEvent = false;
 
@@ -135,7 +136,11 @@
     region.appendChild(toast);
     window.setTimeout(() => toast.remove(), 3100);
   }
-  function saveCart() { writeStorage(STORAGE.cart, cart); }
+  function saveCart() {
+    if (!cart.length) appliedCoupon = '';
+    writeStorage(STORAGE.cart, cart);
+    writeStorage(STORAGE.coupon, appliedCoupon);
+  }
   function saveWishlist() { writeStorage(STORAGE.wishlist, wishlist); }
   function saveOrders() { writeStorage(STORAGE.orders, orders); }
 
@@ -249,6 +254,17 @@
   function closeModalOnly() {
     $$('.modal').forEach(modal => { modal.hidden = true; });
     currentModal = null;
+    infoReturnContext = null;
+  }
+  function dismissDialog() {
+    if (currentModal?.id === 'infoModal' && infoReturnContext) {
+      const { modalId, trigger } = infoReturnContext;
+      closeModalOnly();
+      openModal(modalId);
+      if (trigger?.isConnected) trigger.focus();
+      return;
+    }
+    closeEverything();
   }
   function closeEverything() {
     closeCart();
@@ -311,6 +327,7 @@
     refreshCart();
     trackEvent('add_to_cart', { currency: 'VND', value: selectedProduct.price * selectedQty, items: [itemForAnalytics(selectedProduct, selectedQty, selectedSize, color)] });
     closeEverything();
+    openCart();
     showToast(`Đã thêm ${selectedProduct.name} vào giỏ hàng.`, 'success');
   }
   function changeQuantity(key, delta) {
@@ -420,10 +437,14 @@
     closeModalOnly();
     openModal('confirmationModal');
   }
-  function showInfo(title, html) {
+  function showInfo(title, html, returnToProduct = false) {
+    const returnContext = returnToProduct && currentModal?.id === 'productModal'
+      ? { modalId: currentModal.id, trigger: $('#sizeGuideTrigger') }
+      : null;
     $('#infoTitle').textContent = title;
     $('#infoBody').innerHTML = html;
     openModal('infoModal');
+    infoReturnContext = returnContext;
   }
   function openDemoOrders() {
     const body = orders.length ? `<p>Danh sách đơn giả lập chỉ được lưu trên trình duyệt/thiết bị này. Không có thông tin nhận hàng được lưu.</p><ol>${orders.map(order => `<li><strong>${order.id}</strong> — ${formatVND(order.total)}<br><small>${new Date(order.date).toLocaleString('vi-VN')} · ${order.itemCount} sản phẩm</small></li>`).join('')}</ol>` : '<p>Chưa có đơn demo nào trên thiết bị này. Thử chọn vài sản phẩm và hoàn tất checkout nhé.</p>';
@@ -506,7 +527,7 @@
   $('#modalQtyPlus').addEventListener('click', () => { selectedQty = Math.min(10, selectedQty + 1); $('#modalQty').textContent = selectedQty; });
   $('#modalAddToCart').addEventListener('click', addSelectedProduct);
   $('#modalWishlist').addEventListener('click', () => { if (selectedProduct) toggleFavorite(selectedProduct.id); });
-  $('#sizeGuideTrigger').addEventListener('click', () => showInfo('Hướng dẫn chọn size', '<p>Bảng size dưới đây là hướng dẫn minh họa cho đồ án; số đo thực tế có thể khác theo thiết kế.</p><ul><li><strong>S:</strong> vòng ngực khoảng 80–84 cm</li><li><strong>M:</strong> vòng ngực khoảng 85–89 cm</li><li><strong>L:</strong> vòng ngực khoảng 90–95 cm</li><li><strong>XL:</strong> vòng ngực khoảng 96–101 cm</li></ul><p>Nếu bạn nằm giữa hai size, ưu tiên phom dáng mong muốn hoặc liên hệ cửa hàng để được tư vấn.</p>'));
+  $('#sizeGuideTrigger').addEventListener('click', () => showInfo('Hướng dẫn chọn size', '<p>Bảng size dưới đây là hướng dẫn minh họa cho đồ án; số đo thực tế có thể khác theo thiết kế.</p><ul><li><strong>S:</strong> vòng ngực khoảng 80–84 cm</li><li><strong>M:</strong> vòng ngực khoảng 85–89 cm</li><li><strong>L:</strong> vòng ngực khoảng 90–95 cm</li><li><strong>XL:</strong> vòng ngực khoảng 96–101 cm</li></ul><p>Nếu bạn nằm giữa hai size, ưu tiên phom dáng mong muốn hoặc liên hệ cửa hàng để được tư vấn.</p>', true));
 
   // Cart and checkout
   $('#cartBtn').addEventListener('click', openCart);
@@ -526,15 +547,11 @@
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));
     renderCheckoutSummary();
   }));
-  $('#overlay').addEventListener('click', () => {
-    if ($('#cartDrawer').classList.contains('open')) closeCart();
-    closeModalOnly();
-    setOverlay(false);
-  });
-  $$('[data-close-modal]').forEach(button => button.addEventListener('click', closeEverything));
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeEverything(); });
+  $('#overlay').addEventListener('click', dismissDialog);
+  $$('[data-close-modal]').forEach(button => button.addEventListener('click', dismissDialog));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') dismissDialog(); });
   $('#finishShopping').addEventListener('click', () => { closeEverything(); $('#shop').scrollIntoView({ behavior: 'smooth' }); });
-  $('#viewDemoOrders').addEventListener('click', openDemoOrders);
+  $$('#viewDemoOrders, [data-demo-orders]').forEach(button => button.addEventListener('click', openDemoOrders));
 
   // Newsletter and footer info are local demo interactions only.
   $('#newsletterForm').addEventListener('submit', event => {
@@ -556,8 +573,17 @@
   }));
   $('#footerDemoInfo').addEventListener('click', () => showInfo('Thông tin bản demo', '<p><strong>LAVIE FASHION</strong> là cửa hàng mô phỏng phục vụ học tập và kiểm thử Google Analytics 4.</p><ul><li>Sản phẩm, giá và đơn hàng đều là dữ liệu giả lập.</li><li>Không có thanh toán, kho hàng, giao vận hay hệ thống quản trị thật.</li><li>Giỏ hàng và danh sách yêu thích lưu trong trình duyệt hiện tại.</li><li>Đơn demo lưu mã đơn, tổng tiền, thời gian và số sản phẩm trên thiết bị; không lưu tên, email, số điện thoại hoặc địa chỉ nhận hàng.</li></ul><p>Vui lòng không nhập thông tin cá nhân thật khi thử nghiệm.</p>'));
 
+  document.addEventListener('error', event => {
+    const image = event.target;
+    const fallback = 'assets/images/product-placeholder.svg';
+    if (image instanceof HTMLImageElement && image.matches('.product-card img, .cart-line img, .checkout-summary-line img, #modalProductImage') && image.getAttribute('src') !== fallback) {
+      image.src = fallback;
+    }
+  }, true);
+
   // Initial render and persisted-cart validation.
-  cart = cart.filter(line => productById(line.productId) && Number.isInteger(line.qty) && line.qty > 0);
+  cart = cart.filter(line => line && productById(line.productId) && Number.isInteger(line.qty) && line.qty > 0);
+  appliedCoupon = cart.length && readStorage(STORAGE.coupon, '') === COUPON_CODE ? COUPON_CODE : '';
   wishlist = wishlist.filter(id => productById(id));
   saveCart(); saveWishlist();
   renderProducts();
