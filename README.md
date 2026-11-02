@@ -7,11 +7,12 @@ Website bán hàng thời trang nữ dạng tĩnh, xây bằng HTML, CSS và Jav
 - Giao diện responsive cho desktop, tablet và điện thoại.
 - Danh mục sản phẩm, tìm kiếm, sắp xếp theo giá/tên, xem chi tiết sản phẩm.
 - Chọn size và màu; thêm/bớt số lượng; xóa sản phẩm khỏi giỏ.
-- Giỏ hàng và danh sách yêu thích được lưu trên trình duyệt bằng `localStorage`.
-- Mã giảm giá demo `LAVIE10` (giảm 10% trên tiền hàng).
+- Giỏ hàng và danh sách yêu thích được lưu trên trình duyệt bằng `localStorage`. Sau khi thêm sản phẩm, giỏ hàng tự mở để xem số lượng, size, màu và tổng tiền.
+- Mã giảm giá demo `LAVIE10` (giảm 10% trên tiền hàng), được giữ khi tải lại trang nếu giỏ còn hàng; tự xóa khi giỏ trống hoặc hoàn tất đơn.
 - Phí giao hàng giả lập 25.000₫; miễn phí cho đơn từ 699.000₫.
 - Form checkout có kiểm tra thông tin, lựa chọn phương thức thanh toán demo và trang xác nhận đơn demo.
-- Ghi nhận đơn demo trên thiết bị hiện tại, không lưu thông tin cá nhân nhập trong form.
+- Nút **Đơn demo** ở đầu trang (desktop và menu di động) và trong xác nhận đơn mở lịch sử tối đa 30 đơn trên trình duyệt hiện tại. Các nút đầu trang dùng thuộc tính `data-demo-orders`. Lịch sử lưu mã đơn, thời gian, tổng tiền, số lượng và dòng sản phẩm; không lưu thông tin cá nhân nhập trong form.
+- Đóng hướng dẫn chọn size sẽ quay về chi tiết sản phẩm, giữ size, màu và số lượng đang chọn.
 - Tích hợp Google Tag Manager để quản lý thẻ GA4; website đẩy sự kiện thương mại điện tử vào dataLayer.
 
 ## Chạy trên máy bằng VS Code
@@ -47,7 +48,7 @@ Các đơn hàng trên website chỉ là dữ liệu demo; không có giao dịc
 
 Các event thương mại điện tử có thông tin `currency`, `value` và `items` phù hợp với hành vi tương ứng. `purchase` chỉ được gửi khi người dùng xác nhận **đơn demo**; không có xử lý thanh toán thật.
 
-Nếu chưa điền Measurement ID, website không gửi event đến GA4; các event demo hiện trong Developer Tools → Console và `window.dataLayer`.
+Để trống `GA_MEASUREMENT_ID` chỉ tắt việc nạp `gtag.js` trực tiếp. Container GTM `GTM-5M5HVX2L` vẫn được nạp và có thể gửi sự kiện đến GA4 theo cấu hình đã xuất bản. Xem payload trong `window.dataLayer`; dùng GTM Preview/Tag Assistant và GA4 DebugView để xác minh việc gửi thực tế. Thay đổi giao diện và ảnh cục bộ không thay đổi ID, payload hay cấu hình GTM/GA4 hiện có.
 
 ## Đưa website lên GitHub và bật GitHub Pages
 
@@ -63,7 +64,7 @@ Nếu chưa điền Measurement ID, website không gửi event đến GA4; các 
 
 1. Mở repository vừa tạo.
 2. Chọn **Add file → Upload files**.
-3. Mở thư mục `lavie-fashion-ga4` trên máy và kéo **các file bên trong** vào vùng tải lên (không kéo cả thư mục bọc bên ngoài): `index.html`, `styles.css`, `app.js`, `config.js`, `README.md`.
+3. Mở thư mục `lavie-fashion-ga4` trên máy và kéo **các file bên trong** vào vùng tải lên (không kéo cả thư mục bọc bên ngoài): `index.html`, `styles.css`, `app.js`, `config.js`, `README.md` và toàn bộ thư mục `assets/` (bao gồm `assets/images/`).
 4. Vì Windows có thể ẩn file bắt đầu bằng dấu chấm, hãy tạo thêm file rỗng `.nojekyll` ngay trên GitHub: **Add file → Create new file**, nhập tên `.nojekyll`, để nội dung trống và commit.
 5. Nhấn **Commit changes** để lưu các file đã upload.
 
@@ -91,3 +92,26 @@ Nếu chưa điền Measurement ID, website không gửi event đến GA4; các 
 ## Giới hạn cần biết
 
 Bản này mô phỏng trải nghiệm cửa hàng cho dự án GA4. Sản phẩm, giá, mã ưu đãi, phí giao hàng và đơn hàng đều là dữ liệu mẫu. Không có cơ sở dữ liệu chung giữa các thành viên, quản lý tồn kho, tài khoản khách hàng, email xác nhận, xử lý giao vận hay cổng thanh toán thực. Nếu muốn vận hành bán hàng thật, cần backend bảo mật, quản trị sản phẩm/đơn hàng và tích hợp thanh toán phù hợp.
+
+## Ảnh sản phẩm cục bộ và nguồn
+
+Tám ảnh minh họa được lưu tại `assets/images/lv001.jpg` đến `lv008.jpg`, chiều rộng 800 px để giảm tải mạng khi mở danh mục. Các ảnh chỉ minh họa loại trang phục; chất liệu, màu tùy chọn và thiết kế mô tả là dữ liệu demo, không phải cam kết về sản phẩm trong ảnh. Khi ảnh lỗi, giao diện dùng `assets/images/product-placeholder.svg` do dự án tự tạo.
+
+| Sản phẩm / tệp | Nguồn chính xác |
+| --- | --- |
+| LV001 / `lv001.jpg` — đầm đỏ | [Unsplash, ảnh gốc đang dùng trong demo](https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=800&q=82) |
+| LV002 / `lv002.jpg` — sơ mi trắng có nút | [Woman Buttoning her Shirt — Pexels](https://www.pexels.com/photo/woman-buttoning-her-shirt-7648167/) · [tệp tải](https://images.pexels.com/photos/7648167/pexels-photo-7648167.jpeg?auto=compress&cs=tinysrgb&w=800) |
+| LV003 / `lv003.jpg` — quần ống rộng | [Blonde Posing in Wide Leg Pants — Pexels](https://www.pexels.com/photo/blonde-posing-in-wide-leg-pants-16554921/) · [tệp tải](https://images.pexels.com/photos/16554921/pexels-photo-16554921.jpeg?auto=compress&cs=tinysrgb&w=800) |
+| LV004 / `lv004.jpg` — áo thun trắng | [Unsplash, ảnh gốc đang dùng trong demo](https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=82) |
+| LV005 / `lv005.jpg` — chân váy chữ A | [Unsplash, ảnh gốc đang dùng trong demo](https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=800&q=82) |
+| LV006 / `lv006.jpg` — blazer trắng | [A Woman Wearing White Blazer — PNW Production / Pexels](https://www.pexels.com/photo/a-woman-wearing-white-blazer-8250254/) · [tệp tải](https://images.pexels.com/photos/8250254/pexels-photo-8250254.jpeg?auto=compress&cs=tinysrgb&w=800) |
+| LV007 / `lv007.jpg` — cardigan hồng nhạt | [Woman with Braided Hair Wearing a Cardigan and Pants — SHVETS production / Pexels](https://www.pexels.com/photo/woman-with-braided-hair-wearing-a-cardigan-and-pants-7506935/) · [tệp tải](https://images.pexels.com/photos/7506935/pexels-photo-7506935.jpeg?auto=compress&cs=tinysrgb&w=800) |
+| LV008 / `lv008.jpg` — túi đỏ có quai | [Unsplash, ảnh gốc đang dùng trong demo](https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=82) |
+
+Tham khảo giấy phép tại [Unsplash License](https://unsplash.com/license) và [Pexels License](https://www.pexels.com/license/). Giữ bảng nguồn khi sao chép bản demo. Ảnh được tải về để danh mục hoạt động khi nguồn bên ngoài lỗi; không có yêu cầu tải ảnh sản phẩm từ dịch vụ bên ngoài khi xem danh mục.
+
+## Kiểm tra bản sửa hiện tại
+
+Bản sửa đã qua 12 kiểm thử Node VM và rà soát mã độc lập; kiểm thử tự động không gửi yêu cầu GA thật. Kiểm tra giao diện bằng trình duyệt và Tag Assistant/GA4 DebugView vẫn đang chờ thực hiện. Người dùng đã cho phép commit, push và triển khai ngày 2026-11-03; quá trình phát hành đang tiến hành, chờ xác nhận kết quả. Xem [kế hoạch và trạng thái](plans/261103-lavie-feedback-repairs/plan.md) cùng [checklist thủ công](plans/261103-lavie-feedback-repairs/reports/manual-validation-checklist.md).
+
+Triển khai các file HTML/CSS/JS tĩnh không làm mất dữ liệu GA4 lịch sử trong property hiện tại. Thu thập dữ liệu mới vẫn phụ thuộc vào việc giữ nguyên cấu hình ID/thẻ, trigger đã xuất bản và tránh gắn thẻ trùng lặp.
