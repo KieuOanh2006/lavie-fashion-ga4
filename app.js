@@ -417,10 +417,11 @@
     const discount = discountAmount();
     const total = cartTotal();
     const transactionId = `LV-DEMO-${Date.now().toString().slice(-8)}`;
+    const purchaseValue = cartValueForAnalytics();
+    const purchaseCoupon = appliedCoupon || undefined;
     const purchasedItems = cartItemsForAnalytics();
-    trackEvent('add_shipping_info', { currency: 'VND', value: cartValueForAnalytics(), shipping_tier: shippingType === 'standard' ? 'Giao hàng tiêu chuẩn (demo)' : shippingType, coupon: appliedCoupon || undefined, items: purchasedItems });
-    trackEvent('add_payment_info', { currency: 'VND', value: cartValueForAnalytics(), payment_type: paymentType === 'cod' ? 'Thanh toán khi nhận hàng (demo)' : 'Chuyển khoản (demo)', coupon: appliedCoupon || undefined, items: purchasedItems });
-    trackEvent('purchase', { transaction_id: transactionId, affiliation: 'LAVIE FASHION DEMO', currency: 'VND', value: cartValueForAnalytics(), tax: 0, shipping, coupon: appliedCoupon || undefined, items: purchasedItems });
+    trackEvent('add_shipping_info', { currency: 'VND', value: purchaseValue, shipping_tier: shippingType === 'standard' ? 'Giao hàng tiêu chuẩn (demo)' : shippingType, coupon: purchaseCoupon, items: purchasedItems });
+    trackEvent('add_payment_info', { currency: 'VND', value: purchaseValue, payment_type: paymentType === 'cod' ? 'Thanh toán khi nhận hàng (demo)' : 'Chuyển khoản (demo)', coupon: purchaseCoupon, items: purchasedItems });
     lastOrder = { id: transactionId, date: new Date().toISOString(), total, itemCount: cartQuantity(), items: purchasedItems.map(item => ({ item_id: item.item_id, item_name: item.item_name, quantity: item.quantity, price: item.price })) };
     orders.unshift(lastOrder);
     orders = orders.slice(0, 30);
@@ -436,6 +437,7 @@
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));
     closeModalOnly();
     openModal('confirmationModal');
+    trackEvent('purchase', { transaction_id: transactionId, affiliation: 'LAVIE FASHION DEMO', currency: 'VND', value: purchaseValue, tax: 0, shipping, coupon: purchaseCoupon, items: purchasedItems });
   }
   function showInfo(title, html, returnToProduct = false) {
     const returnContext = returnToProduct && currentModal?.id === 'productModal'
@@ -542,6 +544,7 @@
   $('#applyCoupon').addEventListener('click', applyCoupon);
   $('#couponInput').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); } });
   $('#checkoutBtn').addEventListener('click', beginCheckout);
+  $('#editCheckoutCart').addEventListener('click', openCart);
   $('#checkoutForm').addEventListener('submit', createDemoOrder);
   $$('input[name="payment"], input[name="shipping"]').forEach(input => input.addEventListener('change', () => {
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));

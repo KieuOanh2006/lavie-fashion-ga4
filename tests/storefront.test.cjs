@@ -120,11 +120,27 @@ test('legacy cart, wishlist and order storage schemas remain readable', () => {
 });
 test('invalid checkout cannot purchase; duplicate submission and restart never replay purchase', () => {
   const app = boot(); add(app); app.$('#checkoutBtn').click();
+  assert.equal(app.api.state().currentModal,'checkoutModal');
+  app.$('#editCheckoutCart').click();
+  assert.equal(app.api.state().currentModal,undefined); assert.equal(app.$('#cartDrawer').classList.contains('open'),true);
+  assert.equal(app.api.state().cart.length,1); assert.equal(app.events('purchase').length,0);
+  app.$('#checkoutBtn').click(); assert.equal(app.api.state().currentModal,'checkoutModal');
   app.$('#checkoutForm').valid = false; app.$('#checkoutForm').fire('submit'); assert.equal(app.events('purchase').length,0);
   app.$('#checkoutForm').valid = true; app.$('#customerPhone').value = 'bad'; app.$('#checkoutForm').fire('submit'); assert.equal(app.events('purchase').length,0);
   app.$('#customerPhone').value = '0901234567'; app.$('#agreeDemo').checked = false; app.$('#checkoutForm').fire('submit'); assert.equal(app.events('purchase').length,0);
+  let orderStoredBeforePurchase = false;
+  const push = app.window.dataLayer.push.bind(app.window.dataLayer);
+  app.window.dataLayer.push = entry => {
+    if (entry?.event === 'purchase') {
+      const savedOrders = JSON.parse(app.storage.get('lavie_demo_orders_v1'));
+      orderStoredBeforePurchase = savedOrders.some(order => order.id === entry.ecommerce.transaction_id);
+      assert.equal(app.api.state().currentModal, 'confirmationModal');
+    }
+    return push(entry);
+  };
   validCheckout(app); app.$('#checkoutForm').fire('submit'); validCheckout(app); app.$('#checkoutForm').fire('submit');
   assert.equal(app.events('purchase').length,1); assert.equal(app.api.state().orders.length,1); assert.equal(app.api.state().cart.length,0);
+  assert.equal(orderStoredBeforePurchase,true);
   const purchase = app.events('purchase')[0].ecommerce; assert.equal(purchase.value,489000); assert.equal(purchase.shipping,25000);
   const persisted = app.storage.get('lavie_demo_orders_v1'); assert.doesNotMatch(persisted,/0901234567|Demo address/);
   const restart = boot(app.storage); restart.$('[data-demo-orders]').click(); assert.equal(restart.api.state().orders.length,1); assert.equal(restart.events('purchase').length,0);

@@ -5,7 +5,8 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 /* Clear visibility and comfortable controls across the shopping journey. */
-[hidden] { display: none !important; }
+  [hidden] { display: none !important; }
+  .checkout-edit-cart { margin: 10px 0 18px; text-align: left; }
 body { font-size:16px; }
 .product-name { font-size:16px; line-height:1.5; text-align:left; }
 .product-price,.cart-line-title,.cart-line-price { font-size:14px; }
