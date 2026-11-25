@@ -111,6 +111,28 @@ test('totals, coupon normalization, restart persistence and shipping threshold',
   restart.api.removeCartLine(restart.api.state().cart[0].key); assert.equal(restart.api.state().appliedCoupon,'');
   add(restart,'LV006'); assert.equal(restart.api.cartTotal(),699000); assert.equal(restart.api.shippingCost(),0);
 });
+test('checkout quantity controls recalculate totals in place and block an empty order', () => {
+  const app = boot(); add(app); app.$('#couponInput').value = 'LAVIE10'; app.$('#applyCoupon').click();
+  app.$('#checkoutBtn').click(); validCheckout(app); app.$('#customerNote').value = 'Giao giờ hành chính';
+  assert.equal(app.$('#checkoutTotal').textContent.replace(/\u00a0/g, ' '), '465.100 ₫');
+  assert.equal(app.$('#checkoutItems [data-checkout-qty][data-delta="1"]').getAttribute('aria-label'), 'Tăng số lượng Đầm midi linen An Nhiên');
+  const beginCheckoutEvents = app.events('begin_checkout').length;
+  const addButton = app.$('#checkoutItems [data-checkout-qty][data-delta="1"]');
+  app.$('#checkoutItems').fire('click', { target: addButton });
+  assert.equal(app.api.state().cart[0].qty, 2); assert.equal(app.api.cartTotal(), 880200);
+  assert.equal(app.$('#checkoutSubtotal').textContent.replace(/\u00a0/g, ' '), '978.000 ₫'); assert.equal(app.$('#checkoutShipping').textContent, 'Miễn phí');
+  assert.equal(app.$('#checkoutTotal').textContent.replace(/\u00a0/g, ' '), '880.200 ₫'); assert.equal(app.$('#customerName').value, 'Demo');
+  assert.equal(app.$('#customerPhone').value, '0901234567'); assert.equal(app.$('#customerAddress').value, 'Demo address');
+  assert.equal(app.$('#customerNote').value, 'Giao giờ hành chính'); assert.equal(app.api.state().appliedCoupon, 'LAVIE10');
+  assert.equal(app.events('begin_checkout').length, beginCheckoutEvents); assert.equal(app.events('purchase').length, 0);
+  const minusButton = app.$('#checkoutItems [data-checkout-qty][data-delta="-1"]');
+  app.$('#checkoutItems').fire('click', { target: minusButton }); assert.equal(app.api.state().cart[0].qty, 1);
+  assert.equal(app.$('#checkoutTotal').textContent.replace(/\u00a0/g, ' '), '465.100 ₫');
+  app.$('#checkoutItems').fire('click', { target: app.$('#checkoutItems [data-checkout-qty][data-delta="-1"]') });
+  assert.equal(app.api.state().cart.length, 0); assert.equal(app.api.state().appliedCoupon, '');
+  assert.equal(app.$('#checkoutSubmitBtn').disabled, true); assert.match(app.$('#checkoutItems').innerHTML, /giỏ hàng đang trống/i);
+  app.$('#checkoutForm').fire('submit'); assert.equal(app.events('purchase').length, 0);
+});
 test('legacy cart, wishlist and order storage schemas remain readable', () => {
   const line = {key:'LV001__M__Đỏ đất',productId:'LV001',size:'M',color:'Đỏ đất',qty:2};
   const order = {id:'LV-DEMO-LEGACY',date:'2026-01-01T00:00:00Z',total:978000,itemCount:2,items:[]};

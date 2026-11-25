@@ -372,11 +372,13 @@
     }
   }
   function renderCheckoutSummary() {
-    $('#checkoutItems').innerHTML = cart.map(line => {
+    const itemsMarkup = cart.map(line => {
       const product = productById(line.productId);
       if (!product) return '';
-      return `<div class="checkout-summary-line"><img src="${product.image}" alt="" loading="lazy" /><div><strong>${product.name}</strong><small>${line.color} · ${line.size} · SL ${line.qty}</small></div><span class="summary-line-price">${formatVND(product.price * line.qty)}</span></div>`;
+      return `<div class="checkout-summary-line"><img src="${product.image}" alt="" loading="lazy" /><div class="checkout-item-details"><strong>${product.name}</strong><small class="checkout-item-variant">${line.color} · ${line.size}</small><div class="checkout-quantity-row"><span class="checkout-quantity-label">Số lượng</span><div class="quantity-control checkout-quantity-control"><button type="button" data-checkout-qty data-cart-key="${line.key}" data-delta="-1" aria-label="Giảm số lượng ${product.name}">−</button><span aria-live="polite">${line.qty}</span><button type="button" data-checkout-qty data-cart-key="${line.key}" data-delta="1" aria-label="Tăng số lượng ${product.name}">+</button></div></div></div><span class="summary-line-price">${formatVND(product.price * line.qty)}</span></div>`;
     }).join('');
+    $('#checkoutItems').innerHTML = itemsMarkup || '<p class="checkout-empty-note">Giỏ hàng đang trống. Hãy quay lại giỏ để chọn sản phẩm.</p>';
+    $('#checkoutSubmitBtn').disabled = cart.length === 0;
     $('#checkoutSubtotal').textContent = formatVND(cartSubtotal());
     $('#checkoutShipping').textContent = shippingCost() === 0 ? 'Miễn phí' : formatVND(shippingCost());
     $('#checkoutShippingPrice').textContent = shippingCost() === 0 ? 'Miễn phí' : formatVND(shippingCost());
@@ -398,13 +400,13 @@
     if (!form.reportValidity()) return;
     const phone = $('#customerPhone').value.replace(/[\s().+-]/g, '');
     if (!/^0?\d{9,10}$/.test(phone)) {
-      $('#checkoutError').textContent = 'Số điện thoại chưa đúng. Hãy nhập số điện thoại Việt Nam từ 9–11 chữ số.';
+      $('#checkoutError').textContent = 'Số điện thoại chưa đúng. Hãy nhập số điện thoại gồm 9–11 chữ số.';
       $('#checkoutError').hidden = false;
       $('#customerPhone').focus();
       return;
     }
     if (!$('#agreeDemo').checked) {
-      $('#checkoutError').textContent = 'Mày cần xác nhận đây là đơn giả lập trước khi tiếp tục.';
+      $('#checkoutError').textContent = 'Bạn cần xác nhận đây là đơn hàng giả lập trước khi tiếp tục.';
       $('#checkoutError').hidden = false;
       $('#agreeDemo').focus();
       return;
@@ -545,6 +547,12 @@
   $('#couponInput').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); } });
   $('#checkoutBtn').addEventListener('click', beginCheckout);
   $('#editCheckoutCart').addEventListener('click', openCart);
+  $('#checkoutItems').addEventListener('click', event => {
+    const button = event.target.closest('[data-checkout-qty]');
+    if (!button || button.disabled) return;
+    changeQuantity(button.dataset.cartKey, Number(button.dataset.delta));
+    renderCheckoutSummary();
+  });
   $('#checkoutForm').addEventListener('submit', createDemoOrder);
   $$('input[name="payment"], input[name="shipping"]').forEach(input => input.addEventListener('change', () => {
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));
