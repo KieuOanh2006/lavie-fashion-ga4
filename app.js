@@ -378,36 +378,79 @@
       return `<div class="checkout-summary-line"><img src="${product.image}" alt="" loading="lazy" /><div class="checkout-item-details"><strong>${product.name}</strong><small class="checkout-item-variant">${line.color} · ${line.size}</small><div class="checkout-quantity-row"><span class="checkout-quantity-label">Số lượng</span><div class="quantity-control checkout-quantity-control"><button type="button" data-checkout-qty data-cart-key="${line.key}" data-delta="-1" aria-label="Giảm số lượng ${product.name}">−</button><span aria-live="polite">${line.qty}</span><button type="button" data-checkout-qty data-cart-key="${line.key}" data-delta="1" aria-label="Tăng số lượng ${product.name}">+</button></div></div></div><span class="summary-line-price">${formatVND(product.price * line.qty)}</span></div>`;
     }).join('');
     $('#checkoutItems').innerHTML = itemsMarkup || '<p class="checkout-empty-note">Giỏ hàng đang trống. Hãy quay lại giỏ để chọn sản phẩm.</p>';
-    $('#checkoutSubmitBtn').disabled = cart.length === 0;
     $('#checkoutSubtotal').textContent = formatVND(cartSubtotal());
     $('#checkoutShipping').textContent = shippingCost() === 0 ? 'Miễn phí' : formatVND(shippingCost());
     $('#checkoutShippingPrice').textContent = shippingCost() === 0 ? 'Miễn phí' : formatVND(shippingCost());
     $('#checkoutDiscountRow').hidden = discountAmount() === 0;
     $('#checkoutDiscount').textContent = `−${formatVND(discountAmount())}`;
     $('#checkoutTotal').textContent = formatVND(cartTotal());
+    $('#checkoutSummaryCount').textContent = `${cartQuantity()} sản phẩm`;
+    $('#checkoutSummaryToggleTotal').textContent = formatVND(cartTotal());
+    $('#checkoutMobileTotal').textContent = formatVND(cartTotal());
+    $('#checkoutSubmitBtn').disabled = cart.length === 0;
+    $('#checkoutMobileSubmitBtn').disabled = cart.length === 0;
+  }
+  const checkoutFieldIds = ['customerName', 'customerPhone', 'customerEmail', 'customerAddress'];
+  function validateCheckoutField(id) {
+    const field = $(`#${id}`);
+    const error = $(`#${id}Error`);
+    const value = field.value.trim();
+    let message = '';
+    if (id === 'customerName' && !value) message = 'Vui lòng nhập họ và tên.';
+    if (id === 'customerPhone') {
+      const phone = value.replace(/[\s().+-]/g, '');
+      if (!phone) message = 'Vui lòng nhập số điện thoại.';
+      else if (!/^0?\d{9,10}$/.test(phone)) message = 'Số điện thoại cần có từ 9 đến 11 chữ số.';
+    }
+    if (id === 'customerEmail' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) message = 'Email chưa đúng định dạng.';
+    if (id === 'customerAddress' && !value) message = 'Vui lòng nhập địa chỉ nhận hàng.';
+    error.textContent = message;
+    error.hidden = !message;
+    field.setAttribute('aria-invalid', String(Boolean(message)));
+    return !message;
+  }
+  function clearCheckoutErrors() {
+    checkoutFieldIds.forEach(id => {
+      const field = $(`#${id}`);
+      field.setAttribute('aria-invalid', 'false');
+      const error = $(`#${id}Error`);
+      error.textContent = '';
+      error.hidden = true;
+    });
+    const agreeError = $('#agreeDemoError');
+    agreeError.textContent = '';
+    agreeError.hidden = true;
+    $('#agreeDemo').setAttribute('aria-invalid', 'false');
+    $('#checkoutError').textContent = '';
+    $('#checkoutError').hidden = true;
   }
   function beginCheckout() {
     if (!cart.length) { showToast('Giỏ hàng đang trống. Chọn món bạn yêu thích nhé.'); return; }
     trackEvent('begin_checkout', { currency: 'VND', value: cartValueForAnalytics(), coupon: appliedCoupon || undefined, items: cartItemsForAnalytics() });
     renderCheckoutSummary();
+    clearCheckoutErrors();
+    const summary = $('#checkoutSummary');
+    const collapsed = window.innerWidth <= 800;
+    summary.classList.toggle('is-collapsed', collapsed);
+    $('#checkoutSummaryToggle').setAttribute('aria-expanded', String(!collapsed));
     closeCart();
-    $('#checkoutError').hidden = true;
     openModal('checkoutModal');
   }
   function createDemoOrder(event) {
     event.preventDefault();
     const form = $('#checkoutForm');
-    if (!form.reportValidity()) return;
-    const phone = $('#customerPhone').value.replace(/[\s().+-]/g, '');
-    if (!/^0?\d{9,10}$/.test(phone)) {
-      $('#checkoutError').textContent = 'Số điện thoại chưa đúng. Hãy nhập số điện thoại gồm 9–11 chữ số.';
-      $('#checkoutError').hidden = false;
-      $('#customerPhone').focus();
+    const invalidFieldIndex = checkoutFieldIds.map(validateCheckoutField).findIndex(valid => !valid);
+    if (invalidFieldIndex >= 0) {
+      const field = $(`#${checkoutFieldIds[invalidFieldIndex]}`);
+      field.focus();
+      field.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     if (!$('#agreeDemo').checked) {
-      $('#checkoutError').textContent = 'Bạn cần xác nhận đây là đơn hàng giả lập trước khi tiếp tục.';
-      $('#checkoutError').hidden = false;
+      const agreeError = $('#agreeDemoError');
+      agreeError.textContent = 'Hãy xác nhận đây là đơn hàng giả lập để tiếp tục.';
+      agreeError.hidden = false;
+      $('#agreeDemo').setAttribute('aria-invalid', 'true');
       $('#agreeDemo').focus();
       return;
     }
@@ -436,6 +479,7 @@
     saveCart();
     refreshCart();
     form.reset();
+    clearCheckoutErrors();
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));
     closeModalOnly();
     openModal('confirmationModal');
@@ -547,6 +591,11 @@
   $('#couponInput').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); } });
   $('#checkoutBtn').addEventListener('click', beginCheckout);
   $('#editCheckoutCart').addEventListener('click', openCart);
+  $('#checkoutSummaryToggle').addEventListener('click', event => {
+    const summary = $('#checkoutSummary');
+    const expanded = summary.classList.toggle('is-collapsed') === false;
+    $('#checkoutSummaryToggle').setAttribute('aria-expanded', String(expanded));
+  });
   $('#checkoutItems').addEventListener('click', event => {
     const button = event.target.closest('[data-checkout-qty]');
     if (!button || button.disabled) return;
@@ -554,6 +603,21 @@
     renderCheckoutSummary();
   });
   $('#checkoutForm').addEventListener('submit', createDemoOrder);
+  $('#checkoutForm').addEventListener('focusout', event => {
+    const field = event.target.closest('[data-checkout-field]');
+    if (field) validateCheckoutField(field.id);
+  });
+  $('#checkoutForm').addEventListener('input', event => {
+    const field = event.target.closest('[data-checkout-field]');
+    if (field && field.getAttribute('aria-invalid') === 'true') validateCheckoutField(field.id);
+  });
+  $('#agreeDemo').addEventListener('change', () => {
+    if ($('#agreeDemo').checked) {
+      $('#agreeDemoError').textContent = '';
+      $('#agreeDemoError').hidden = true;
+      $('#agreeDemo').setAttribute('aria-invalid', 'false');
+    }
+  });
   $$('input[name="payment"], input[name="shipping"]').forEach(input => input.addEventListener('change', () => {
     $$('.choice-card').forEach(label => label.classList.toggle('selected', $('input', label).checked));
     renderCheckoutSummary();

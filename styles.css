@@ -52,3 +52,29 @@ body { font-size:16px; }
 @media(max-width:1100px) { .header-action-label { display:none; } }
 @media(max-width:800px) { .demo-orders-desktop { display:none; } .demo-orders-mobile { display:block; } .product-name { font-size:14px; } .quick-view-btn { min-height:44px; font-size:12px; } }
 @media(max-width:540px) { .product-meta { flex-wrap:wrap; } .product-badge { max-width:calc(100% - 45px); padding:4px; font-size:12px; } .size-options { flex-wrap:wrap; } .checkout-summary .checkout-items { grid-template-columns:1fr; } .option-heading { flex-wrap:wrap; gap:8px; } .cart-line { grid-template-columns:60px minmax(0,1fr); } .cart-line img { width:60px; } }
+
+/* Checkout improvements: accessible inline validation and compact mobile purchase controls. */
+.checkout-field-error { display:block; margin:3px 0 0; color:#a64d39; font-size:12px; line-height:1.45; }
+.form-field input[aria-invalid="true"] { border-color:#a64d39; box-shadow:0 0 0 1px #a64d39; }
+.checkbox-field input[aria-invalid="true"] { outline:2px solid #a64d39; outline-offset:2px; }
+.agreement-error { margin:-10px 0 12px 24px; }
+.checkout-summary-toggle, .checkout-mobile-bar { display:none; }
+.checkout-summary-details { min-width:0; }
+@media(max-width:800px) {
+  .checkout-modal { display:flex; flex-direction:column; height:92vh; max-height:92vh; overflow:hidden; }
+  .checkout-layout { flex:1 1 auto; min-height:0; overflow:auto; }
+  .checkout-summary { grid-row:1; padding:18px 20px; }
+  .checkout-summary .eyebrow { display:none; }
+  .checkout-summary-toggle { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 0 12px; border:0; background:transparent; text-align:left; cursor:pointer; }
+  .checkout-summary-toggle-label strong, .checkout-summary-toggle-label small { display:block; }
+  .checkout-summary-toggle-label strong { font-size:13px; font-weight:600; }
+  .checkout-summary-toggle-label small { margin-top:3px; color:var(--muted); font-size:12px; }
+  .checkout-summary.is-collapsed .checkout-summary-details { display:none; }
+  .checkout-form-panel { padding:27px 20px 20px; }
+  .checkout-form-panel .submit-order-btn { display:none; }
+  .checkout-mobile-bar { position:relative; z-index:5; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid var(--line); background:var(--white); box-shadow:0 -8px 22px rgba(32,37,31,.10); }
+  .checkout-mobile-total small, .checkout-mobile-total strong { display:block; white-space:nowrap; }
+  .checkout-mobile-total small { color:var(--muted); font-size:11px; }
+  .checkout-mobile-total strong { margin-top:1px; font-size:15px; }
+  .checkout-mobile-bar .button { min-height:48px; gap:8px; padding:0 13px; white-space:nowrap; }
+}
